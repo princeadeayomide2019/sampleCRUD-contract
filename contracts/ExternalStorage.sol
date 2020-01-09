@@ -2,15 +2,13 @@ pragma solidity >=0.4.22 <0.6.0;
 
 contract ExternalStorage{
     
-
-    mapping(bytes32 => uint) internal uIntStorage;
-    mapping(bytes32 => address) internal addressStorage;
-
-    struct Profile{
-        string name;
-        uint phone;
-        address ethaddress;
+    struct TodoList{
+        string title;
+        string body;
     }
-    
-    bytes32[] account;
+
+    address owner;
+    mapping(address => TodoList) public list;
+    event itemAdded(string title, string content);
+    event itemDeleted(address _item);
 }

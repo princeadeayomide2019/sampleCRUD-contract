@@ -1,58 +1,28 @@
 pragma solidity >=0.4.22 <0.6.0;
 import "./ExternalStorage.sol";
 
-contract CallingContract is ExternalStorage{
-    
-     address owner = msg.sender;
-     address latestOwner;
-    
-    modifier onlyOwner() {
-       require(msg.sender == latestOwner,"Only the latest owner can update");
+contract TodoDapp is ExternalStorage{
+    modifier onlyOwner(){
+        require(msg.sender == owner, "Only owner can delete a list");
         _;
     }
-
-    function changeOwner(address _newOwner) public {
-        require(msg.sender == owner,"Only the owner can update");
-        latestOwner = _newOwner;
+   function addTodo(string memory _title, string memory _content) public returns (bool){
+        TodoList memory _structTodoList;
+        _structTodoList.title = _title;
+        _structTodoList.body = _content;
+        list[msg.sender] = _structTodoList;
+        emit itemAdded(_title, _content);
+        return true;
     }
     
-    // *** Getter Methods ***
-    function getUint(bytes32 _key) internal view returns(uint) {
-        return uIntStorage[_key];
-    }
-
-    function getAddress(bytes32 _key) external view returns(address) {
-        return addressStorage[_key];
-    }
-
-    // *** Setter Methods ***
-    function setUint(bytes32 _key, uint _value)internal  onlyOwner  {
-        uIntStorage[_key] = _value;
-    }
-
-    function setAddress(bytes32 _key, address _value)internal  onlyOwner  {
-        addressStorage[_key] = _value;
-    }
-
-    // *** Delete Methods ***
-    function deleteUint(bytes32 _key) external  onlyOwner  {
-        delete uIntStorage[_key];
-    }
-
-    function deleteAddress(bytes32 _key) external  onlyOwner  {
-        delete addressStorage[_key];
+    function getList(address _list) public view returns(string memory title, string memory content){
+        return (title = list[_list].title,
+        content = list[_list].body);
+        
     }
     
-    
-    function getBalance(address balanceHolder) public view returns(uint) {
-        return getUint(keccak256(abi.encodePacked("balances",balanceHolder)));
-    }
-    
-    function setBalance(address balanceHolder, uint amount) public {
-        setUint(keccak256(abi.encodePacked("balances", balanceHolder)), amount);
-    }
-    
-    function addBalance(address balanceHolder, uint amount) public {
-        setBalance(balanceHolder, getBalance(balanceHolder) + amount);
+    function deleteTodo(address _list) public onlyOwner {
+        delete list[_list];
+        emit itemDeleted(_list);
     }
 }
