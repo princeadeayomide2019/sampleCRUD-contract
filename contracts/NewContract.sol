@@ -16,7 +16,7 @@ contract Participants {
 	// Dynamic Array to keep record growing
 	ParticipantData[] public participants;
 
-	// This function create new participants' info
+	// This function create new participants' info/data
 	function createNewParticipant (string memory _name, string memory _profession, string _hobby, uint age) public {
 		// participants.push(ParticipantData(_name, _profession, _hobby, age));
 		uint data = participants.push(ParticipantData(_name, _profession, age)) - 1;
